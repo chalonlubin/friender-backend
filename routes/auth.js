@@ -57,8 +57,13 @@ router.post("/register", upload.single('image'), async function (req, res, next)
   const file = req.file;
   console.log(file);
   const result = await uploadFile(file);
+  const filePath = result.Location;
   console.log(result)
-  const { username, password, interests, hobbies, location, radius} = req.body
+
+
+  // const { username, password, interests, hobbies, location, radius} = req.body
+
+  const user = {...req.body, images: filePath}
 
 
   // const validator = jsonschema.validate(
@@ -71,9 +76,9 @@ router.post("/register", upload.single('image'), async function (req, res, next)
   //   throw new BadRequestError(errs);
   // }
 
-  // const newUser = await User.register({ ...req.body});
-  // const token = createToken(newUser);
-  // return res.status(201).json({ token });
+  const newUser = await User.register({ ...user});
+  const token = createToken(newUser);
+  return res.status(201).json({ token });
 });
 
 
