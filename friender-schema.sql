@@ -4,9 +4,7 @@ CREATE TABLE users (
   -- maybe email for verification
   hobbies TEXT,
   interest TEXT,
-  -- Cannot get this data type to work, not sure the fix :(
-    -- I think bringing this down to a seperate table may make sense, since the user probabl won't be ready to write a profile at signup, we could have them signup with required info, then have them populate a on the next page, not sure exactly how that would look?
-  images TEXT[1] NOT NULL,
+  images TEXT NOT NULL,
   -- // TODO: maybe change location to INT and name to zip?
   -- location TEXT NOT NULL,
   location INT NOT NULL,
@@ -15,8 +13,10 @@ CREATE TABLE users (
   last_login_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP);
 
 CREATE TABLE matches (
-  liker TEXT REFERENCES users,
-  likee TEXT REFERENCES users,
+  liker TEXT REFERENCES users
+    ON DELETE CASCADE,
+  likee TEXT REFERENCES users
+    ON DELETE CASCADE,
   matched BOOLEAN);
 
 CREATE TABLE messages (
@@ -27,10 +27,4 @@ CREATE TABLE messages (
   sent_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   read_at TIMESTAMP WITH TIME ZONE DEFAULT NULL);
 
--- I was thinking about this, maybe this would be easier to use for the images?
--- The user could input form data, and then we lead them to a profile page where they can upload images of thesselves and work on their bio or something like that?
-  -- CREATE TABLE images (
-  -- id SERIAL PRIMARY KEY,
-  -- username TEXT NOT NULL REFERENCES users,
-  -- path TEXT NOT NULL);
 
