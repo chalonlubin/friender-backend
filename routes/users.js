@@ -13,16 +13,15 @@ const { createToken } = require("../helpers/tokens");
 // const userUpdateSchema = require("../schemas/userUpdate.json");
 const db = require("../db");
 
-
 const router = express.Router();
-
 
 /** TEST ROUTE */
 router.get("/", async function (req, res, next) {
   try {
     const results = await db.query(
       `SELECT *
-        FROM users`);
+        FROM users`
+    );
     const user = results.rows;
 
     return res.json({ user });

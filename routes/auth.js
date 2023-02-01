@@ -3,8 +3,7 @@
 /** Routes for authentication. */
 const jsonschema = require("jsonschema");
 const multer = require("multer");
-const upload = multer({ dest: 'uploads/' })
-
+const upload = multer({ dest: "uploads/" });
 
 const User = require("../models/user");
 const express = require("express");
@@ -14,7 +13,6 @@ const { createToken } = require("../helpers/tokens");
 // const userRegisterSchema = require("../schemas/userRegister.json");
 const { BadRequestError } = require("../expressError");
 const { uploadFile } = require("../s3");
-
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -40,7 +38,6 @@ router.post("/token", async function (req, res, next) {
   return res.json({ token });
 });
 
-
 /** POST /auth/register:   { user } => { token }
  *
  * user must include { username, password, images, location, radius }
@@ -51,35 +48,34 @@ router.post("/token", async function (req, res, next) {
  */
 
 // TODO: on the front end, make sure form has correct attrib for multer
-router.post("/register", upload.single('image'), async function (req, res, next) {
-  // req.file is the `image` file
-  // req.body will hold the text fields, if there were any
-  const file = req.file;
-  console.log(file);
-  const result = await uploadFile(file);
-  const filePath = result.Location;
-  console.log(result)
+router.post(
+  "/register",
+  upload.single("image"),
+  async function (req, res, next) {
+    // req.file is the `image` file
+    // req.body will hold the text fields, if there were any
+    const file = req.file;
 
+    const result = await uploadFile(file);
+    const filePath = result.Location;
+    console.log('filePath',filePath);
 
-  // const { username, password, interests, hobbies, location, radius} = req.body
+    const user = { ...req.body, images: filePath };
 
-  const user = {...req.body, images: filePath}
+    // const validator = jsonschema.validate(
+    //   req.body,
+    //   userRegisterSchema,
+    //   {required: true}
+    // );
+    // if (!validator.valid) {
+    //   const errs = validator.errors.map(e => e.stack);
+    //   throw new BadRequestError(errs);
+    // }
 
-
-  // const validator = jsonschema.validate(
-  //   req.body,
-  //   userRegisterSchema,
-  //   {required: true}
-  // );
-  // if (!validator.valid) {
-  //   const errs = validator.errors.map(e => e.stack);
-  //   throw new BadRequestError(errs);
-  // }
-
-  const newUser = await User.register({ ...user});
-  const token = createToken(newUser);
-  return res.status(201).json({ token });
-});
-
+    const newUser = await User.register({ ...user });
+    const token = createToken(newUser);
+    return res.status(201).json({ token });
+  }
+);
 
 module.exports = router;
