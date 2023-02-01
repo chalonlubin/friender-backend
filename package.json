@@ -11,7 +11,14 @@
   "license": "ISC",
   "dependencies": {
     "aws-sdk": "^2.1305.0",
+    "bcrypt": "^5.1.0",
+    "body-parser": "^2.0.0-beta.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.3",
     "express": "^5.0.0-beta.1",
+    "express-cors": "^0.0.3",
+    "jsonwebtoken": "^9.0.0",
+    "pg": "^8.9.0",
     "uuid": "^9.0.0"
   }
 }
