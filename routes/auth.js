@@ -2,6 +2,7 @@
 
 /** Routes for authentication. */
 const jsonschema = require("jsonschema");
+// TODO: how to save photos without creating an uploads folder
 const multer = require("multer");
 const upload = multer({ dest: "uploads/" });
 
@@ -53,8 +54,6 @@ router.post(
   "/register",
   upload.single("image"),
   async function (req, res, next) {
-    // req.file is the `image` file
-    // req.body will hold the text fields, if there were any
     const file = req.file;
 
     const result = await uploadFile(file);
