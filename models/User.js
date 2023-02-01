@@ -134,14 +134,14 @@ class User {
     return results.rows;
   }
 
-  /** Given a username, return data about user. (For profile page)
+  /** Given a username, return data about user.
    *
    * Returns { username, hobbies, interest, location, [images],
    *       radius, join_at, last_login_at }
    *
    * Throws NotFoundError if user not found.
    */
-  static async getSelf(username) {
+  static async get(username) {
     const userRes = await db.query(
       `SELECT username,
       hobbies,
@@ -231,6 +231,43 @@ class User {
       sent_at: m.sent_at,
       read_at: m.read_at,
     }));
+  }
+
+  /** Update user data with `data`.
+   *
+   * This is a "partial update" --- it's fine if data doesn't contain
+   * all the fields; this only changes provided ones.
+   *
+   * Data can include:
+   *   {password, hobbies, interests, images, location, radius }
+   *
+   * Returns { username, hobbies, interests, images, location, radius }
+   *
+   * Throws NotFoundError if not found.
+   *
+   */
+
+  //TODO:  needs work
+  static async update(username, data) {
+    if (data.password) {
+      data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
+    }
+  }
+
+  /** Delete given user from database; returns undefined.
+   *
+   */
+  static async remove(username) {
+    let result = await db.query(
+      `DELETE
+           FROM users
+           WHERE username = $1
+           RETURNING username`,
+      [username]
+    );
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${username}`);
   }
 }
 

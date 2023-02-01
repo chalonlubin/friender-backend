@@ -5,6 +5,7 @@ CREATE TABLE users (
   hobbies TEXT,
   interest TEXT,
   -- Cannot get this data type to work, not sure the fix :(
+    -- I think bringing this down to a seperate table may make sense, since the user probabl won't be ready to write a profile at signup, we could have them signup with required info, then have them populate a on the next page, not sure exactly how that would look?
   images TEXT[1] NOT NULL,
   -- // TODO: maybe change location to INT and name to zip?
   -- location TEXT NOT NULL,

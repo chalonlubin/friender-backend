@@ -5,16 +5,15 @@
 const express = require("express");
 const cors = require("cors");
 
-
 const { NotFoundError } = require("./expressError");
+
 const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
-const messageRoutes = require("./routes/messages");
-const matchesRoutes = require("./routes/matches");
+// const messageRoutes = require("./routes/messages");
+// const matchesRoutes = require("./routes/matches");
 
-const app = new express();
-
+const app = express();
 
 // allow connections to all routes from any browser
 app.use(cors());
@@ -23,15 +22,16 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
 
-
 // get auth token for all routes
 app.use(authenticateJWT);
 
 /** routes */
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
-app.use("/messages", messageRoutes);
-app.use("/matches", matchesRoutes);
+// app.use("/messages", messageRoutes);
+// app.use("/matches", matchesRoutes);
+
+
 
 /** 404 handler: matches unmatched routes; raises NotFoundError. */
 app.use(function (req, res, next) {
