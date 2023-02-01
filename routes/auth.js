@@ -2,7 +2,7 @@
 
 /** Routes for authentication. */
 
-// const jsonschema = require("jsonschema");
+const jsonschema = require("jsonschema");
 
 const User = require("../models/user");
 const express = require("express");
@@ -46,7 +46,14 @@ router.post("/token", async function (req, res, next) {
  * Authorization required: none
  */
 
-router.post("/register", async function (req, res, next) {
+// TODO: on the front end, make sure form has correct attrib for multer
+router.post("/register", upload.single('image'), async function (req, res, next) {
+  // req.file is the `image` file
+  // req.body will hold the text fields, if there were any
+  const image = req.image;
+  console.log(image);
+  const { username, password, interests, hobbies, location, radius} = req.body
+
   // const validator = jsonschema.validate(
   //   req.body,
   //   userRegisterSchema,

@@ -3,6 +3,7 @@
 /** Express app for friender. */
 
 const express = require("express");
+const multer  = require('multer')
 const cors = require("cors");
 
 const { NotFoundError } = require("./expressError");
@@ -14,6 +15,7 @@ const userRoutes = require("./routes/users");
 // const matchesRoutes = require("./routes/matches");
 
 const app = express();
+const upload = multer({ dest: 'uploads/' })
 
 // allow connections to all routes from any browser
 app.use(cors());
