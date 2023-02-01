@@ -35,10 +35,10 @@ app.use("/users", userRoutes);
 
 
 
-// /** 404 handler: matches unmatched routes; raises NotFoundError. */
-// app.use(function (req, res, next) {
-//   throw new NotFoundError();
-// });
+/** 404 handler: matches unmatched routes; raises NotFoundError. */
+app.use(function (req, res, next) {
+  throw new NotFoundError();
+});
 
 /** Error handler: logs stacktrace and returns JSON error message. */
 app.use(function (err, req, res, next) {

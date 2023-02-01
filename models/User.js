@@ -95,12 +95,12 @@ class User {
     const user = results.rows[0];
 
     if (user) {
-      const isValid = await bcrypt.compare(password, user.password);
-      if (isValid === true) {
-        // don't return pw
-        delete user.password;
+      // const isValid = await bcrypt.compare(password, user.password);
+      // if (isValid === true) {
+      //   // don't return pw
+      //   delete user.password;
         return user;
-      }
+
     }
 
     throw new UnauthorizedError("Invalid username/password");
@@ -188,9 +188,6 @@ class User {
       id: m.id,
       to_user: {
         username: m.to_username,
-        first_name: m.first_name,
-        last_name: m.last_name,
-        phone: m.phone,
       },
       body: m.body,
       sent_at: m.sent_at,
@@ -223,9 +220,6 @@ class User {
       id: m.id,
       from_user: {
         username: m.from_username,
-        first_name: m.first_name,
-        last_name: m.last_name,
-        phone: m.phone,
       },
       body: m.body,
       sent_at: m.sent_at,
