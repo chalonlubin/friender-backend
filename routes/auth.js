@@ -1,8 +1,10 @@
 "use strict";
 
 /** Routes for authentication. */
-
 const jsonschema = require("jsonschema");
+const multer = require("multer");
+const upload = multer({ dest: 'uploads/' })
+
 
 const User = require("../models/user");
 const express = require("express");
@@ -11,6 +13,8 @@ const { createToken } = require("../helpers/tokens");
 // const userAuthSchema = require("../schemas/userAuth.json");
 // const userRegisterSchema = require("../schemas/userRegister.json");
 const { BadRequestError } = require("../expressError");
+const { uploadFile } = require("../s3");
+
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -50,9 +54,12 @@ router.post("/token", async function (req, res, next) {
 router.post("/register", upload.single('image'), async function (req, res, next) {
   // req.file is the `image` file
   // req.body will hold the text fields, if there were any
-  const image = req.image;
-  console.log(image);
+  const file = req.file;
+  console.log(file);
+  const result = await uploadFile(file);
+  console.log(result)
   const { username, password, interests, hobbies, location, radius} = req.body
+
 
   // const validator = jsonschema.validate(
   //   req.body,
@@ -64,9 +71,9 @@ router.post("/register", upload.single('image'), async function (req, res, next)
   //   throw new BadRequestError(errs);
   // }
 
-  const newUser = await User.register({ ...req.body});
-  const token = createToken(newUser);
-  return res.status(201).json({ token });
+  // const newUser = await User.register({ ...req.body});
+  // const token = createToken(newUser);
+  // return res.status(201).json({ token });
 });
 
 
