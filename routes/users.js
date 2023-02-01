@@ -6,7 +6,7 @@
 
 const express = require("express");
 const { ensureCorrectUser } = require("../middleware/auth");
-// const { BadRequestError } = require("../expressError");
+const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
 const { createToken } = require("../helpers/tokens");
 // const userNewSchema = require("../schemas/userNew.json");
@@ -15,16 +15,24 @@ const db = require("../db");
 
 const router = express.Router();
 
-/** TEST ROUTE */
-router.get("/", async function (req, res, next) {
+/** GET / => [{user}, {user}, ...]
+ *
+ *  - gets all users that are not the current user and have not
+ *    matched with curr user
+ *
+ *  - query strings: username, location, radius
+ *
+ * Returns [{username, hobbies, interests, location, radius, image,
+ *  joinAt, lastLoginAt}, ...]
+ *
+ * Authorization required: same user-as-:username
+ **/
+router.get("/", ensureCorrectUser, async function (req, res, next) {
   try {
-    const results = await db.query(
-      `SELECT *
-        FROM users`
-    );
-    const user = results.rows;
+    const { username, location, radius } = req.query
+    const users = await User.getAll(username, location, radius)
+    return res.json({users})
 
-    return res.json({ user });
   } catch (err) {
     return next(err);
   }
@@ -32,7 +40,8 @@ router.get("/", async function (req, res, next) {
 
 /** GET users/[username] => { user }
  *
- * Returns {username, hobbies, interests, location, radius, images}
+ * Returns {username, hobbies, interests, location, radius,
+ *  image, joinAt, lastLoginAt}
  *
  * Authorization required: same user-as-:username
  **/
@@ -47,21 +56,21 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 });
 
 //FIXME: This route probably should go in matches
-/** GET matches/users/ => [{...match data},....]
+/** GET users/:username/matches => [{user},....]
  *
+ *  - gets all users the curr user has matched with (swiped right)
  *
- * Returns [{username, hobbies, interests, location, radius, images},....]
+ * Returns [{username, hobbies, interests, location, radius,
+ *  image, lastLoginAt},...]
  *
  * Authorization required: same user-as-:username
  **/
 
-router.get(
-  "matches/:username",
-  ensureCorrectUser,
-  async function (req, res, next) {
+router.get("users/:username/matches", ensureCorrectUser, async function (req, res, next) {
     try {
       const user = await User.get(req.params.username);
       return res.json({ user });
+      
     } catch (err) {
       return next(err);
     }
@@ -71,9 +80,9 @@ router.get(
 /** PATCH users/[username] { user } => { user }
  *
  * Data can include:
- *   { hobbies, interests, location, radius, images }
+ *   { hobbies, interestss, location, radius, image }
  *
- * Returns { username, hobbies, interests, location, radius, images}
+ * Returns { username, hobbies, interestss, location, radius, image}
  *
  * Authorization required: same-user-as-:username
  **/

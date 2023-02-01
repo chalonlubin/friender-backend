@@ -17,17 +17,17 @@ class User {
   /** Given new user data, creates new user in the db with hashed pw
    * Returns new user
    *
-   *  - { username, password, hobbies, interest, location, [images], radius } ->
-   *    { username, hobbies, interest, location, [images],
+   *  - { username, password, hobbies, interests, location, [image], radius } ->
+   *    { username, hobbies, interests, location, [image],
    *        radius, join_at, last_login_at }
    */
   static async register({
     username,
     password,
     hobbies,
-    interest,
+    interests,
     location,
-    images,
+    image,
     radius,
   }) {
     const duplicateCheck = await db.query(
@@ -40,7 +40,6 @@ class User {
     if (duplicateCheck.rows[0]) {
       throw new BadRequestError(`Duplicate username: ${username}`);
     }
-    // TODO: insert images into AWS, retrieve urls and return
     const hashedPw = await bcrypt.hash(password, BCRYPT_WORK_FACTOR);
 
     const results = await db.query(
@@ -48,8 +47,8 @@ class User {
               username,
               password,
               hobbies,
-              interest,
-              images,
+              interests,
+              image,
               location,
               radius,
               join_at,
@@ -57,13 +56,13 @@ class User {
         VALUES ($1, $2, $3, $4, $5, $6, $7, current_timestamp, current_timestamp)
         RETURNING username,
               hobbies,
-              interest,
-              images,
+              interests,
+              image,
               location,
               radius,
               join_at AS "joinAt",
               last_login_at AS "lastLoginAt"`,
-      [username, hashedPw, hobbies, interest, images, location, radius]
+      [username, hashedPw, hobbies, interests, image, location, radius]
     );
 
     return results.rows[0];
@@ -73,7 +72,7 @@ class User {
    *  - throw error if no user
    *
    *  - (username, password) ->
-   *    { username, hobbies, interest, location, [images],
+   *    { username, hobbies, interests, location, [image],
    *        radius, join_at, last_login_at }
    */
   static async authenticate(username, password) {
@@ -81,8 +80,8 @@ class User {
       `SELECT username,
               password,
               hobbies,
-              interest,
-              images,
+              interests,
+              image,
               location,
               radius,
               join_at,
@@ -95,12 +94,12 @@ class User {
     const user = results.rows[0];
 
     if (user) {
-      // const isValid = await bcrypt.compare(password, user.password);
-      // if (isValid === true) {
-      //   // don't return pw
-      //   delete user.password;
+      const isValid = await bcrypt.compare(password, user.password);
+      if (isValid === true) {
+        // don't return pw
+        delete user.password;
         return user;
-
+      }
     }
 
     throw new UnauthorizedError("Invalid username/password");
@@ -111,14 +110,16 @@ class User {
   // TODO: If we cant get past the zipcode issue, use states instead
 
   /** Get all users that are within radius of currUser's location */
+  // TODO: Talk about whether we should remove users that have swiped left on you
+
   static async getAll(username, location, radius) {
     // return array of user objects,
 
     const results = await db.query(
       `SELECT username,
-              interest,
+              interestss,
               hobbies,
-              images,
+              image,
               location,
               radius,
               join_at AS "joinAt",
@@ -136,7 +137,7 @@ class User {
 
   /** Given a username, return data about user.
    *
-   * Returns { username, hobbies, interest, location, [images],
+   * Returns { username, hobbies, interests, location, image,
    *       radius, join_at, last_login_at }
    *
    * Throws NotFoundError if user not found.
@@ -144,13 +145,13 @@ class User {
   static async get(username) {
     const userRes = await db.query(
       `SELECT username,
-      hobbies,
-      interest,
-      images,
-      location,
-      radius,
-      join_at AS "joinAt",
-      last_login_at AS "lastLoginAt"
+              hobbies,
+              interests,
+              image,
+              location,
+              radius,
+              join_at AS "joinAt",
+              last_login_at AS "lastLoginAt"
            FROM users
            WHERE username = $1`,
       [username]
@@ -162,6 +163,42 @@ class User {
 
     return user;
   }
+
+  /** Given a username, return data about user.
+   *
+   * Returns { username, hobbies, interests, location, image,
+   *       radius, join_at, last_login_at }
+   *
+   * Throws NotFoundError if user not found.
+   */
+  static async getMatches(username) {
+    const userRes = await db.query(
+      `SELECT username,
+              hobbies,
+              interests,
+              image,
+              location,
+              radius,
+              last_login_at AS "lastLoginAt"
+          FROM users AS u
+          JOIN matches AS a
+            ON a.likee = u.username
+          JOIN matches as b
+            ON b.liker = u.username
+          WHERE (a.liker = $1 AND a.likee = u.username AND a.matched = 't')
+            AND (b.liker = u.username AND b.likee = $1 AND b.matched = 't');`
+      [username]
+    );
+
+    `Select liker`
+
+    const user = userRes.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    return user;
+  }
+
 
   /** Return messages from this user.
    *
@@ -233,9 +270,9 @@ class User {
    * all the fields; this only changes provided ones.
    *
    * Data can include:
-   *   {password, hobbies, interests, images, location, radius }
+   *   {password, hobbies, interestss, image, location, radius }
    *
-   * Returns { username, hobbies, interests, images, location, radius }
+   * Returns { username, hobbies, interestss, image, location, radius }
    *
    * Throws NotFoundError if not found.
    *

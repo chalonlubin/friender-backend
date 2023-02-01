@@ -3,7 +3,7 @@
     "$id": "http://example.com/example.json",
     "type": "object",
     "properties": {
-      "interests": {
+      "interestss": {
         "type": "string",
         "minLength": 1,
         "maxLength": 300
@@ -13,7 +13,7 @@
         "minLength": 1,
         "maxLength": 300
       },
-      "images": {
+      "image": {
         "type": "string"
       },
       "location": {

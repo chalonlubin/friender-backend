@@ -1,4 +1,4 @@
-INSERT INTO users (username, password, images, location, radius)
+INSERT INTO users (username, password, image, location, radius)
 VALUES
   ('chalon', 'password123','image1.jpg', 94102, 50),
   ('arlaine', 'password456','image3.jpg', 94103, 25),
@@ -39,5 +39,3 @@ VALUES
   ('kadeem', 'nicki', 'Im your biggest fan!'),
   ('brian', 'chalon', 'You are my facorite person!'),
   ('nicki', 'arlaine', 'YOO IM nicki MINAJ!');
-
-

@@ -13,7 +13,7 @@
         "minLength": 5,
         "maxLength": 20
       },
-      "interests": {
+      "interestss": {
         "type": "string",
         "minLength": 1,
         "maxLength": 300
@@ -23,7 +23,7 @@
         "minLength": 1,
         "maxLength": 300
       },
-      "images": {
+      "image": {
         "type": "string"
       },
       "location": {
@@ -37,7 +37,7 @@
     "required": [
       "username",
       "password",
-      "images",
+      "image",
       "location",
       "radius"
     ]

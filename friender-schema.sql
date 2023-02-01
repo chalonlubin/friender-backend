@@ -3,10 +3,9 @@ CREATE TABLE users (
   password TEXT NOT NULL,
   -- maybe email for verification
   hobbies TEXT,
-  interest TEXT,
-  images TEXT NOT NULL,
+  interests TEXT,
+  image TEXT NOT NULL,
   -- // TODO: maybe change location to INT and name to zip?
-  -- location TEXT NOT NULL,
   location INT NOT NULL,
   radius INT NOT NULL,
   join_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
@@ -26,5 +25,3 @@ CREATE TABLE messages (
   body TEXT NOT NULL,
   sent_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   read_at TIMESTAMP WITH TIME ZONE DEFAULT NULL);
-
-

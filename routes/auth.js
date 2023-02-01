@@ -40,7 +40,7 @@ router.post("/token", async function (req, res, next) {
 
 /** POST /auth/register:   { user } => { token }
  *
- * user must include { username, password, images, location, radius }
+ * user must include { username, password, image, location, radius }
  *
  * Returns JWT token which can be used to authenticate further requests.
  *
@@ -48,6 +48,7 @@ router.post("/token", async function (req, res, next) {
  */
 
 // TODO: on the front end, make sure form has correct attrib for multer
+// TODO: This is creating an uploads folder, how to stop?
 router.post(
   "/register",
   upload.single("image"),
@@ -60,7 +61,7 @@ router.post(
     const filePath = result.Location;
     console.log('filePath',filePath);
 
-    const user = { ...req.body, images: filePath };
+    const user = { ...req.body, image: filePath };
 
     // const validator = jsonschema.validate(
     //   req.body,
