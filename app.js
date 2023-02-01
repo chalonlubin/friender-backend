@@ -2,37 +2,36 @@
 
 /** Express app for friender. */
 
-
 const express = require("express");
 const cors = require("cors");
-const { authenticateJWT } = require("./middleware/auth");
+
 
 const { NotFoundError } = require("./expressError");
-const app = new express();
-
-// allow both form-encoded and json body parsing
-app.use(express.json());
-app.use(express.urlencoded());
-
-// allow connections to all routes from any browser
-app.use(cors());
-
-// get auth token for all routes
-app.use(authenticateJWT);
-
-/** routes */
-
+const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 const messageRoutes = require("./routes/messages");
 const matchesRoutes = require("./routes/matches");
 
+const app = new express();
+
+
+// allow connections to all routes from any browser
+app.use(cors());
+
+// allow both form-encoded and json body parsing
+app.use(express.json());
+app.use(express.urlencoded());
+
+
+// get auth token for all routes
+app.use(authenticateJWT);
+
+/** routes */
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 app.use("/messages", messageRoutes);
 app.use("/matches", matchesRoutes);
-
-
 
 /** 404 handler: matches unmatched routes; raises NotFoundError. */
 app.use(function (req, res, next) {
@@ -46,8 +45,5 @@ app.use(function (err, req, res, next) {
   if (process.env.NODE_ENV !== "test") console.error(status, err.stack);
   return res.status(status).json({ error: { message, status } });
 });
-
-
-
 
 module.exports = app;
