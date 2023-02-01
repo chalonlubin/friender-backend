@@ -1,18 +1,16 @@
 "use strict";
 
-/** Message class for Friender */
-
 const { NotFoundError } = require("../expressError");
 const db = require("../db");
 
-/** Message on the site. */
+/** Message model for match dm's. */
 
 class Message {
   /** Register new message -- returns
    *    {id, from_username, to_username, body, sent_at, read_at}
    */
 
-  static async create( from_username, to_username, body ) {
+  static async create(fromUsername, toUsername, body) {
     const result = await db.query(
       `INSERT INTO messages (from_username,
                                  to_username,
