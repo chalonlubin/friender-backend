@@ -16,7 +16,7 @@ CREATE TABLE matches (
     ON DELETE CASCADE,
   likee TEXT REFERENCES users
     ON DELETE CASCADE,
-  matched BOOLEAN);
+  matched BOOLEAN NOT NULL);
 
 CREATE TABLE messages (
   id SERIAL PRIMARY KEY,

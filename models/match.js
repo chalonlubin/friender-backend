@@ -1,46 +1,31 @@
 "use strict";
 
+const db = require("../db");
+
+
+
 /** Match class for Friender */
 
 class Match {
 
-  /** updates match table with
+  /** Updates match table with two users that have
+   *  liked/not liked the other user
    *
-   * returns {liker, likee, matched}
+   * returns {liker, likee, matchStatus (bool)}
    *
    */
-  static async updateMatch(likerUsername, likeeUsername, match) {
+  static async updateMatch(likerUsername, likeeUsername, matchStatus) {
+    console.log(likerUsername, likeeUsername, matchStatus)
     const result = await db.query(
       `INSERT INTO matches (liker, likee, matched)
-      VALUES ($1, $2', $3)
-      RETURNING liker, likee, matched as MatchStatus;
+              VALUES ($1, $2, $3)
+          RETURNING liker, likee, matched AS "matchStatus"
       `,
-      [likerUsername, likeeUsername, match]
+      [likerUsername, likeeUsername, matchStatus]
     );
     const match = result.rows[0];
     return match;
   }
-
-  /** Find matches for a user by username
-   *
-   * returns [likee, matched}, ...]
-   *
-   * */
-
-  static async findMatches(username) {
-    const result = await db.query(
-      `SELECT likee, matched
-      FROM matches
-      WHERE liker IN (
-        SELECT likee
-        FROM matches
-        WHERE liker = likee AND matched = 'true'
-      ) AND matched = 'true'
-      AND liker = $1;
-      `,
-      [username]
-    );
-    const matches = result.rows;
-    return matches;
-  }
 }
+
+module.exports = Match;

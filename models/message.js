@@ -9,7 +9,7 @@ const db = require("../db");
 
 class Message {
   /** Register new message -- returns
-   *    {id, from_username, to_username, body, sent_at}
+   *    {id, from_username, to_username, body, sent_at, read_at}
    */
 
   static async create( from_username, to_username, body ) {
@@ -17,12 +17,15 @@ class Message {
       `INSERT INTO messages (from_username,
                                  to_username,
                                  body,
-                                 sent_at)
+                                 sent_at,
+                                 read_at)
              VALUES
-               ($1, $2, $3, current_timestamp)
+               ($1, $2, $3, current_timestamp, current_timestamp)
              RETURNING id, from_username AS "fromUsername",
              to_username as "toUsername",
-             body, sent_at as "sentAt"`,
+             body,
+             sent_at as "sentAt",
+             read_at as "readAt"`,
       [from_username, to_username, body]
     );
 

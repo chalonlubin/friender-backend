@@ -11,7 +11,7 @@ const { authenticateJWT } = require("./middleware/auth");
 const authRoutes = require("./routes/auth");
 const userRoutes = require("./routes/users");
 // const messageRoutes = require("./routes/messages");
-// const matchesRoutes = require("./routes/matches");
+const matchesRoutes = require("./routes/matches");
 
 const app = express();
 
@@ -31,7 +31,7 @@ app.use(authenticateJWT);
 app.use("/auth", authRoutes);
 app.use("/users", userRoutes);
 // app.use("/messages", messageRoutes);
-// app.use("/matches", matchesRoutes);
+app.use("/matches", matchesRoutes);
 
 
 
