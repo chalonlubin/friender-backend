@@ -10,10 +10,9 @@ CREATE TABLE users (
   username TEXT PRIMARY KEY,
   password TEXT NOT NULL,
   hobbies TEXT,
-  interest TEXT,
+  interests TEXT,
   images TEXT[] NOT NULL,
-  // TODO: maybe change location to INT
-  location TEXT NOT NULL,
+  location INT NOT NULL,
   radius INT NOT NULL,
   join_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   last_login_at TIMESTAMP WITH TIME ZONE);
@@ -27,8 +26,10 @@ CREATE TABLE messages (
   read_at TIMESTAMP WITH TIME ZONE);
 
 CREATE TABLE matches (
-  liker TEXT REFERENCES users,
-  likee TEXT REFERENCES users,
+  liker TEXT REFERENCES users
+    ON DELETE CASCADE,
+  likee TEXT REFERENCES users
+    ON DELETE CASCADE,
   matched BOOLEAN);
 
 \echo 'Delete and recreate friender db?'
@@ -42,8 +43,8 @@ CREATE TABLE users (
   username TEXT PRIMARY KEY,
   password TEXT NOT NULL,
   hobbies TEXT,
-  interest TEXT,
-  location TEXT NOT NULL,
+  interests TEXT,
+  location INT NOT NULL,
   radius INT NOT NULL,
   join_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
   last_login_at TIMESTAMP WITH TIME ZONE);
@@ -57,6 +58,8 @@ CREATE TABLE messages (
   read_at TIMESTAMP WITH TIME ZONE);
 
 CREATE TABLE matches (
-  liker TEXT REFERENCES users,
-  likee TEXT REFERENCES users,
+  liker TEXT REFERENCES users
+    ON DELETE CASCADE,
+  likee TEXT REFERENCES users
+    ON DELETE CASCADE,
   matched BOOLEAN);

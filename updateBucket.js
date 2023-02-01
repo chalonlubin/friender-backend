@@ -2,10 +2,12 @@
 var AWS = require('aws-sdk');
 // Set the region
 // AWS.config.update({region: 'REGION'});
+//upload image file to bucket on React/frontend --  needs some singed url
 
 // Create S3 service object
 var s3 = new AWS.S3({apiVersion: '2006-03-01'});
 
+// s3.getSignedUrl()
 // call S3 to retrieve upload file to specified bucket
 var uploadParams = {Bucket: process.argv[2], Key: '', Body: ''};
 var file = process.argv[3];
