@@ -27,9 +27,10 @@ const router = express.Router();
  *
  * Authorization required: same user-as-:username
  **/
-router.get("/", ensureCorrectUser, async function (req, res, next) {
+router.get("/:username/potentials", ensureCorrectUser, async function (req, res, next) {
   try {
-    const { username, location, radius } = req.query
+    const { username } = req.params
+    const { location, radius } = req.query
     const users = await User.getAll(username, location, radius)
     return res.json({users})
 
@@ -66,11 +67,12 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
  * Authorization required: same user-as-:username
  **/
 
-router.get("users/:username/matches", ensureCorrectUser, async function (req, res, next) {
+// Handle empty matches in React
+router.get("/:username/matches", ensureCorrectUser, async function (req, res, next) {
     try {
-      const user = await User.get(req.params.username);
-      return res.json({ user });
-      
+      const matches = await User.getMatches(req.params.username);
+      return res.json({ matches });
+
     } catch (err) {
       return next(err);
     }

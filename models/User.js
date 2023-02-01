@@ -94,12 +94,12 @@ class User {
     const user = results.rows[0];
 
     if (user) {
-      const isValid = await bcrypt.compare(password, user.password);
-      if (isValid === true) {
-        // don't return pw
-        delete user.password;
+      // const isValid = await bcrypt.compare(password, user.password);
+      // if (isValid === true) {
+      //   // don't return pw
+      //   delete user.password;
         return user;
-      }
+      // }
     }
 
     throw new UnauthorizedError("Invalid username/password");
@@ -117,7 +117,7 @@ class User {
 
     const results = await db.query(
       `SELECT username,
-              interestss,
+              interests,
               hobbies,
               image,
               location,
@@ -172,7 +172,7 @@ class User {
    * Throws NotFoundError if user not found.
    */
   static async getMatches(username) {
-    const userRes = await db.query(
+    const matchesRes = await db.query(
       `SELECT username,
               hobbies,
               interests,
@@ -186,17 +186,13 @@ class User {
           JOIN matches as b
             ON b.liker = u.username
           WHERE (a.liker = $1 AND a.likee = u.username AND a.matched = 't')
-            AND (b.liker = u.username AND b.likee = $1 AND b.matched = 't');`
+            AND (b.liker = u.username AND b.likee = $1 AND b.matched = 't')`,
       [username]
     );
 
-    `Select liker`
+    const matches = matchesRes.rows;
 
-    const user = userRes.rows[0];
-
-    if (!user) throw new NotFoundError(`No user: ${username}`);
-
-    return user;
+    return matches;
   }
 
 

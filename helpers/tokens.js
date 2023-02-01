@@ -8,7 +8,7 @@ function createToken(user) {
       "createToken passed user without isAdmin property");
 
   let payload = {
-    username: user.username,
+    username: user.username
   };
 
   return jwt.sign(payload, SECRET_KEY);
