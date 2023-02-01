@@ -118,6 +118,6 @@ class User {
         `, [username]
     )
     // user helper function to filter users for users within radius of location
-    
+
   }
 }
