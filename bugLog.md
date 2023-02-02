@@ -5,3 +5,6 @@
 3. Seed data - omg there is a lot to do
 
 4. multer uploads folder
+
+5. Organizing the architecture of state, useEffect with matches, potentials.
+
