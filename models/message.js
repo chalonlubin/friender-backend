@@ -24,7 +24,7 @@ class Message {
              body,
              sent_at as "sentAt",
              read_at as "readAt"`,
-      [from_username, to_username, body]
+      [fromUsername, toUsername, body]
     );
 
     return result.rows[0];

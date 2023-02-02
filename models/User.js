@@ -196,69 +196,91 @@ class User {
   }
 
 
-  /** Return messages from this user.
-   *
-   * [{id, to_user, body, sent_at, read_at}]
-   *
-   * where to_user is
-   *   {username}
-   */
+  static async getMessages(liker, likee) {
+    const messagesRes = await db.query(
+      `SELECT from_username AS "fromUsername",
+              to_username AS "toUsername",
+              body,
+              sent_at AS "sentAt",
+              read_at AS "readAt"
+          FROM messages
+          WHERE (to_username = $1 AND from_username = $2)
+          OR (to_username = $2 AND from_username = $1)
+          ORDER BY sent_at ASC`,
+          [likee, liker]
+    )
 
-  static async messagesFrom(username) {
-    const result = await db.query(
-      `SELECT m.id,
-                  m.to_username,
-                  m.body,
-                  m.sent_at,
-                  m.read_at
-             FROM messages AS m
-                    JOIN users AS u ON m.to_username = u.username
-             WHERE from_username = $1`,
-      [username]
-    );
+    const messages = messagesRes.rows;
 
-    return result.rows.map((m) => ({
-      id: m.id,
-      to_user: {
-        username: m.to_username,
-      },
-      body: m.body,
-      sent_at: m.sent_at,
-      read_at: m.read_at,
-    }));
+    return messages;
   }
 
-  /** Return messages to this user.
-   *
-   * [{id, from_user, body, sent_at, read_at}]
-   *
-   * where from_user is
-   *   {id}
-   */
 
-  static async messagesTo(username) {
-    const result = await db.query(
-      `SELECT m.id,
-                  m.from_username,
-                  m.body,
-                  m.sent_at,
-                  m.read_at
-             FROM messages AS m
-                    JOIN users AS u ON m.from_username = u.username
-             WHERE to_username = $1`,
-      [username]
-    );
+  // /** Return messages from this user.
+  //  *
+  //  * [{id, to_user, body, sent_at, read_at}]
+  //  *
+  //  * where to_user is
+  //  *   {username}
+  //  */
 
-    return result.rows.map((m) => ({
-      id: m.id,
-      from_user: {
-        username: m.from_username,
-      },
-      body: m.body,
-      sent_at: m.sent_at,
-      read_at: m.read_at,
-    }));
-  }
+  // static async messagesFrom(username) {
+  //   const result = await db.query(
+  //     `SELECT m.id,
+  //                 m.to_username,
+  //                 m.body,
+  //                 m.sent_at,
+  //                 m.read_at
+  //            FROM messages AS m
+  //                   JOIN users AS u ON m.to_username = u.username
+  //            WHERE from_username = $1`,
+  //     [username]
+  //   );
+
+  //   return result.rows.map((m) => ({
+  //     id: m.id,
+  //     to_user: {
+  //       username: m.to_username,
+  //     },
+  //     body: m.body,
+  //     sent_at: m.sent_at,
+  //     read_at: m.read_at,
+  //   }));
+  // }
+
+  // /** Return messages to this user.
+  //  *
+  //  * [{id, from_user, body, sent_at, read_at}]
+  //  *
+  //  * where from_user is
+  //  *   {id}
+  //  */
+
+  // static async messagesTo(username) {
+  //   const result = await db.query(
+  //     `SELECT m.id,
+  //                 m.from_username,
+  //                 m.body,
+  //                 m.sent_at,
+  //                 m.read_at
+  //            FROM messages AS m
+  //                   JOIN users AS u ON m.from_username = u.username
+  //            WHERE to_username = $1`,
+  //     [username]
+  //   );
+
+  //   return result.rows.map((m) => ({
+  //     id: m.id,
+  //     from_user: {
+  //       username: m.from_username,
+  //     },
+  //     body: m.body,
+  //     sent_at: m.sent_at,
+  //     read_at: m.read_at,
+  //   }));
+  // }
+
+
 
   /** Get messages from user to user AND messages to user1 from user2 */
 

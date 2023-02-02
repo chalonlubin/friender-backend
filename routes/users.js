@@ -55,29 +55,6 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-//FIXME: This route probably should go in matches
-/** GET users/:username/matches => [{user},....]
- *
- *  - gets all users the curr user has matched with (swiped right)
- *
- * Returns [{username, hobbies, interests, location, radius,
- *  image, lastLoginAt},...]
- *
- * Authorization required: same user-as-:username
- **/
-
-// Handle empty matches in React
-router.get("/:username/matches", ensureCorrectUser, async function (req, res, next) {
-    try {
-      const matches = await User.getMatches(req.params.username);
-      return res.json({ matches });
-
-    } catch (err) {
-      return next(err);
-    }
-  }
-);
-
 /** PATCH users/[username] { user } => { user }
  *
  * Data can include:
@@ -120,5 +97,39 @@ router.delete("/:username", ensureCorrectUser, async function (req, res, next) {
     return next(err);
   }
 });
+
+
+//FIXME: This route probably should go in matches
+/** GET users/:username/matches => [{user},....]
+ *
+ *  - gets all users the curr user has matched with (swiped right)
+ *
+ * Returns [{username, hobbies, interests, location, radius,
+ *  image, lastLoginAt},...]
+ *
+ * Authorization required: same user-as-:username
+ **/
+
+//TODO: Handle empty matches in React
+router.get("/:username/matches", ensureCorrectUser, async function (req, res, next) {
+  try {
+    const matches = await User.getMatches(req.params.username);
+    return res.json({ matches });
+
+  } catch (err) {
+    return next(err);
+  }
+}
+);
+
+router.get("/:username/messages/:recipient", ensureCorrectUser, async function (req, res, next) {
+  try {
+    const { username, recipient } = req.params
+    const messages = await User.getMessages(username, recipient)
+    return res.json({ messages })
+  } catch (err) {
+    return next(err);
+  }
+})
 
 module.exports = router;

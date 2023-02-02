@@ -13,15 +13,14 @@ const { NotFoundError } = require("../expressError");
 
 const router = express.Router();
 
-/** POST
+/** POST /:username
  *
  *  - creates a new message
- *
- *  - query strings: username, location, radius
+ *  - body: {toUsername, body}
  *
  * Authorization required: same user-as-:username
  *
- *  Returns {id, fromUsername, toUsername, body, sentAt}
+ *  Returns {id, fromUsername, toUsername, body, sentAt, readAt}
  **/
 router.post("/:username", ensureCorrectUser, async function (req, res, next) {
   const fromUsername = req.params.username;
