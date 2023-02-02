@@ -1,21 +1,21 @@
 "use strict";
 
 /** Routes for authentication. */
-const jsonschema = require("jsonschema");
-// TODO: how to save photos without creating an uploads folder
-const multer = require("multer");
-const upload = multer({ dest: "uploads/" });
-
-const User = require("../models/user");
 const express = require("express");
-const router = new express.Router();
-const { createToken } = require("../helpers/tokens");
-// const userAuthSchema = require("../schemas/userAuth.json");
-// const userRegisterSchema = require("../schemas/userRegister.json");
-const { BadRequestError } = require("../expressError");
+const multer = require("multer");
+// TODO: how to save photos without creating an uploads folder
+const upload = multer({ dest: "uploads/" });
 const { uploadFile } = require("../s3");
 
+const { createToken } = require("../helpers/tokens");
+const { BadRequestError } = require("../expressError");
 
+const User = require("../models/user");
+const jsonschema = require("jsonschema");
+const userNew = require("../schemas/userNew.json");
+const userAuth = require("../schemas/userAuth.json");
+
+const router = new express.Router();
 
 /** POST /auth/token:  { username, password } => { token }
  *
@@ -28,17 +28,16 @@ router.post("/token", async function (req, res, next) {
   if (req.body === undefined) {
     throw new BadRequestError();
   }
-  // const validator = jsonschema.validate(
-  //   req.body,
-  //   userAuthSchema,
-  //   {required: true}
-  // );
-  // if (!validator.valid) {
-  //   const errs = validator.errors.map(e => e.stack);
-  //   throw new BadRequestError(errs);
-  // }
-
   const { username, password } = req.body;
+
+  const validator = jsonschema.validate({ username, password }, userAuth, {
+    required: true,
+  });
+  if (!validator.valid) {
+    const errs = validator.errors.map((e) => e.stack);
+    throw new BadRequestError(errs);
+  }
+
   const user = await User.authenticate(username, password);
   if (user) {
     const token = createToken(user);
@@ -59,7 +58,6 @@ router.post("/token", async function (req, res, next) {
  */
 
 // TODO: on the front end, make sure form has correct attrib for multer
-// TODO: This is creating an uploads folder, how to stop?
 router.post(
   "/register",
   upload.single("image"),
@@ -68,22 +66,19 @@ router.post(
 
     const result = await uploadFile(file);
     const filePath = result.Location;
-    console.log('filePath',filePath);
-
     const user = { ...req.body, image: filePath };
 
-    // const validator = jsonschema.validate(
-    //   req.body,
-    //   userRegisterSchema,
-    //   {required: true}
-    // );
-    // if (!validator.valid) {
-    //   const errs = validator.errors.map(e => e.stack);
-    //   throw new BadRequestError(errs);
-    // }
+    const validator = jsonschema.validate(user, userNew, {
+      required: true,
+    });
+    if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }
 
     const newUser = await User.register({ ...user });
     const token = createToken(newUser);
+
     return res.status(201).json({ token });
   }
 );

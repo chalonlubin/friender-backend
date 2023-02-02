@@ -11,6 +11,7 @@ const {
   UnauthorizedError,
 } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sqlHelper");
+const { inRadius } = require("../helpers/radius");
 
 /** User of the site. */
 
@@ -95,25 +96,27 @@ class User {
     const user = results.rows[0];
 
     if (user) {
-      // const isValid = await bcrypt.compare(password, user.password);
-      // if (isValid === true) {
-      //   // don't return pw
-      //   delete user.password;
+      const isValid = await bcrypt.compare(password, user.password);
+      if (isValid === true) {
+        // don't return pw
+        delete user.password;
       return user;
-      // }
+      }
     }
 
     throw new UnauthorizedError("Invalid username/password");
   }
 
-  // TODO: how to find users within radius of a location
-  // npm install this: https://www.npmjs.com/package/zipcodes
-  // TODO: If we cant get past the zipcode issue, use states instead
-
-  /** Get all users that are within radius of currUser's location */
-  // TODO: Talk about whether we should remove users that have swiped left on you
-
-  static async getAll(username, location, radius) {
+  /** Get all users that are within radius preference of curUser's location
+   *
+   * - Accepts user: { username, location, radius }
+   *
+   * - Returns array of users:
+   *   [{ username, hobbies, interests, location, image,
+   *       radius, join_at, last_login_at }...]
+   *
+   */
+  static async getAll({ username, location, radius }) {
     // return array of user objects,
 
     const results = await db.query(
@@ -132,8 +135,14 @@ class User {
         ORDER BY username`,
       [username]
     );
-    // user helper function to filter users for users within radius of location
-    return results.rows;
+
+    const curUser = { username, location, radius };
+
+    const eligibleUsers = results.rows.filter((potential) => {
+      if (inRadius(curUser, potential)) return potential;
+    });
+
+    return eligibleUsers;
   }
 
   /** Given a username, return data about user.
@@ -197,11 +206,12 @@ class User {
   }
 
   /** Get messages from user to user AND messages to user1 from user2
-
    *
-   * @param {*} liker
-   * @param {*} likee
-   * @returns
+   * Accepts liker, likee
+   *
+   * Returns array of messages:
+   *  [{ fromUsername, toUsername, body, sentAt, readAt }...]
+   *  sorted by sentAt ascending.
    */
   static async getMessages(liker, likee) {
     const messagesRes = await db.query(
@@ -232,7 +242,6 @@ class User {
    * Throws NotFoundError if not found.
    *
    */
-
   static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
@@ -274,7 +283,6 @@ class User {
   }
 
   /** Delete given user from database; returns undefined.
-   *
    */
   static async remove(username) {
     let result = await db.query(
@@ -286,7 +294,9 @@ class User {
     );
     const user = result.rows[0];
 
-    if (!user) throw new NotFoundError(`No user: ${username}`);
+    if (user.length === 0) throw new NotFoundError(`No user: ${username}`);
+
+    return { deleted: username };
   }
 }
 

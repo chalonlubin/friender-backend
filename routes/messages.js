@@ -1,13 +1,15 @@
 "use strict";
 
 const express = require("express");
-const { ensureCorrectUser } = require("../middleware/auth");
+const jsonschema = require("jsonschema");
+
 const Message = require("../models/message");
 const User = require("../models/user");
-const { NotFoundError } = require("../expressError");
-// const userNewSchema = require("../schemas/userNew.json");
-// const userUpdateSchema = require("../schemas/userUpdate.json");
-// const jsonschema = require("jsonschema");
+
+const { ensureCorrectUser } = require("../middleware/auth");
+const { NotFoundError, BadRequestError } = require("../expressError");
+
+const messageNewSchema = require("../schemas/messageNew.json");
 
 /** Message routes for match dm's. */
 
@@ -18,21 +20,31 @@ const router = express.Router();
  *  - creates a new message
  *  - body: {toUsername, body}
  *
- * Authorization required: same user-as-:username
+ *  Authorization required: same user-as-:username
  *
  *  Returns {id, fromUsername, toUsername, body, sentAt, readAt}
  **/
 router.post("/:username", ensureCorrectUser, async function (req, res, next) {
   const fromUsername = req.params.username;
-
   const { toUsername, body } = req.body;
 
-  const matches = await User.getMatches(fromUsername);
-
   // make sure users are a match.
+  const matches = await User.getMatches(fromUsername);
   const matchStatus = matches.some((match) => match.username === toUsername);
   if (matchStatus === false)
-    throw new NotFoundError("That is not a match, yet.");
+    throw new NotFoundError("You can only message matches.");
+
+  const validator = jsonschema.validate(
+    { toUsername, body },
+    messageNewSchema,
+    {
+      required: true,
+    }
+  );
+  if (!validator.valid) {
+    const errs = validator.errors.map((e) => e.stack);
+    throw new BadRequestError(errs);
+  }
 
   try {
     const newMessage = await Message.create(fromUsername, toUsername, body);
@@ -42,15 +54,14 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
   }
 });
 
-/** PATCH
+/** PATCH /:id
  *
  * - updates the read_at property to the current timestamp
- *
  * - query strings: id
  *
- * Authorization required: same user-as-:username
+ *  Authorization required: same user-as-:username
  *
- * Returns {id, readAt}
+ *  Returns {id, readAt}
  */
 router.patch("/:id", async function (req, res, next) {
   try {

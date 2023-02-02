@@ -3,7 +3,7 @@
     "$id": "http://example.com/example.json",
     "type": "object",
     "properties": {
-      "interestss": {
+      "interests": {
         "type": "string",
         "minLength": 1,
         "maxLength": 300
@@ -17,10 +17,12 @@
         "type": "string"
       },
       "location": {
-        "type": "number"
+        "type": "integer",
+        "pattern": "[0-9]{5}(-[0-9]{4})?"
       },
       "radius": {
-        "type": "number"
+        "type": "integer",
+        "maximum": 500
       }
     },
     "additionalProperties": false,

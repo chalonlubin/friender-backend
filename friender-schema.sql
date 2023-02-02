@@ -5,7 +5,6 @@ CREATE TABLE users (
   hobbies TEXT,
   interests TEXT,
   image TEXT NOT NULL,
-  -- // TODO: maybe change location to INT and name to zip?
   location INT NOT NULL,
   radius INT NOT NULL,
   join_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
