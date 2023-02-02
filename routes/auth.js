@@ -65,6 +65,8 @@ router.post(
   "/register",
   upload.single("image"),
   async function (req, res, next) {
+    req.body.location = +req.body.location;
+    req.body.radius = +req.body.radius;
 
     const file = req.file;
     const result = await uploadFile(file);
