@@ -1,11 +1,12 @@
 "use strict";
 
+
+
 /** Routes for authentication. */
 const express = require("express");
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
-// const upload = multer({ dest: "uploads/" });
+const upload = multer({ storage});
 const { uploadFile } = require("../s3");
 
 const { createToken } = require("../helpers/tokens");
