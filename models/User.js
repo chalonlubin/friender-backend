@@ -260,6 +260,8 @@ class User {
     }));
   }
 
+  /** Get messages from user to user AND messages to user1 from user2 */
+
   /** Update user data with `data`.
    *
    * This is a "partial update" --- it's fine if data doesn't contain
