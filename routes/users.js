@@ -11,7 +11,8 @@ const { BadRequestError } = require("../expressError");
 
 const multer = require("multer");
 // TODO: how to save photos without creating an uploads folder
-const upload = multer({ dest: "uploads/" });
+const storage = multer.memoryStorage();
+const upload = multer({storage});
 const { uploadFile } = require("../s3");
 
 const router = express.Router();
@@ -82,7 +83,7 @@ router.patch(
 
     if (req.file) {
       const file = req.file;
-
+      console.log('req.file!',req.file);
       const result = await uploadFile(file);
       const filePath = result.Location;
       userUpdate = { ...req.body, image: filePath };
