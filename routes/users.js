@@ -65,7 +65,7 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
 /** PATCH /:username
  *
  * Data can include:
- *   { password, hobbies, interests, location, radius, image }
+ *   { hobbies, interests, location, radius, image }
  *
  * Returns { username, hobbies, interests, location, radius, image}
  *

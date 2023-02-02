@@ -68,6 +68,8 @@ router.post(
     req.body.location = +req.body.location;
     req.body.radius = +req.body.radius;
 
+    if (!req.file) throw new BadRequestError("Image required.")
+
     const file = req.file;
     const result = await uploadFile(file);
     const filePath = result.Location;

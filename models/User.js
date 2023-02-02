@@ -235,7 +235,7 @@ class User {
   /** Update user data with `data`.
    *
    * Data can include:
-   *   { password, interests, hobbies, location, image, radius }
+   *   { interests, hobbies, location, image, radius }
    *
    * Returns { username, interests, hobbies, location, image, radius }
    *
@@ -264,7 +264,6 @@ class User {
 
     if (!user) throw new NotFoundError(`No user: ${username}`);
 
-    delete user.password;
     return user;
   }
 

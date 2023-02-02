@@ -5,12 +5,10 @@
     "properties": {
       "interests": {
         "type": "string",
-        "minLength": 1,
         "maxLength": 300
       },
       "hobbies": {
         "type": "string",
-        "minLength": 1,
         "maxLength": 300
       },
       "image": {
