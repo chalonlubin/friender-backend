@@ -3,3 +3,5 @@
 2. s3 -- how to upload files to our bucket and give bucket public access AND return image url
 
 3. Seed data - omg there is a lot to do
+
+4. multer uploads folder

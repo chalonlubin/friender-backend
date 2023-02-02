@@ -3,8 +3,9 @@
 /** Routes for authentication. */
 const express = require("express");
 const multer = require("multer");
-// TODO: how to save photos without creating an uploads folder
-const upload = multer({ dest: "uploads/" });
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
+// const upload = multer({ dest: "uploads/" });
 const { uploadFile } = require("../s3");
 
 const { createToken } = require("../helpers/tokens");
@@ -43,6 +44,7 @@ router.post("/token", async function (req, res, next) {
     const token = createToken(user);
     User.updateLoginTimestamp(username);
     return res.json({ token });
+
   } else {
     throw new UnauthorizedError("Invalid username/password");
   }
@@ -62,8 +64,8 @@ router.post(
   "/register",
   upload.single("image"),
   async function (req, res, next) {
-    const file = req.file;
 
+    const file = req.file;
     const result = await uploadFile(file);
     const filePath = result.Location;
     const user = { ...req.body, image: filePath };
