@@ -25,6 +25,9 @@ const { uploadFile } = require("../s3");
  */
 
 router.post("/token", async function (req, res, next) {
+  if (req.body === undefined) {
+    throw new BadRequestError();
+  }
   // const validator = jsonschema.validate(
   //   req.body,
   //   userAuthSchema,
@@ -37,8 +40,13 @@ router.post("/token", async function (req, res, next) {
 
   const { username, password } = req.body;
   const user = await User.authenticate(username, password);
-  const token = createToken(user);
-  return res.json({ token });
+  if (user) {
+    const token = createToken(user);
+    User.updateLoginTimestamp(username);
+    return res.json({ token });
+  } else {
+    throw new UnauthorizedError("Invalid username/password");
+  }
 });
 
 /** POST /auth/register:   { user } => { token }

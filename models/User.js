@@ -10,6 +10,7 @@ const {
   BadRequestError,
   UnauthorizedError,
 } = require("../expressError");
+const { sqlForPartialUpdate } = require("../helpers/sqlHelper");
 
 /** User of the site. */
 
@@ -98,7 +99,7 @@ class User {
       // if (isValid === true) {
       //   // don't return pw
       //   delete user.password;
-        return user;
+      return user;
       // }
     }
 
@@ -195,7 +196,13 @@ class User {
     return matches;
   }
 
+  /** Get messages from user to user AND messages to user1 from user2
 
+   *
+   * @param {*} liker
+   * @param {*} likee
+   * @returns
+   */
   static async getMessages(liker, likee) {
     const messagesRes = await db.query(
       `SELECT from_username AS "fromUsername",
@@ -207,102 +214,63 @@ class User {
           WHERE (to_username = $1 AND from_username = $2)
           OR (to_username = $2 AND from_username = $1)
           ORDER BY sent_at ASC`,
-          [likee, liker]
-    )
+      [likee, liker]
+    );
 
     const messages = messagesRes.rows;
 
     return messages;
   }
 
-
-  // /** Return messages from this user.
-  //  *
-  //  * [{id, to_user, body, sent_at, read_at}]
-  //  *
-  //  * where to_user is
-  //  *   {username}
-  //  */
-
-  // static async messagesFrom(username) {
-  //   const result = await db.query(
-  //     `SELECT m.id,
-  //                 m.to_username,
-  //                 m.body,
-  //                 m.sent_at,
-  //                 m.read_at
-  //            FROM messages AS m
-  //                   JOIN users AS u ON m.to_username = u.username
-  //            WHERE from_username = $1`,
-  //     [username]
-  //   );
-
-  //   return result.rows.map((m) => ({
-  //     id: m.id,
-  //     to_user: {
-  //       username: m.to_username,
-  //     },
-  //     body: m.body,
-  //     sent_at: m.sent_at,
-  //     read_at: m.read_at,
-  //   }));
-  // }
-
-  // /** Return messages to this user.
-  //  *
-  //  * [{id, from_user, body, sent_at, read_at}]
-  //  *
-  //  * where from_user is
-  //  *   {id}
-  //  */
-
-  // static async messagesTo(username) {
-  //   const result = await db.query(
-  //     `SELECT m.id,
-  //                 m.from_username,
-  //                 m.body,
-  //                 m.sent_at,
-  //                 m.read_at
-  //            FROM messages AS m
-  //                   JOIN users AS u ON m.from_username = u.username
-  //            WHERE to_username = $1`,
-  //     [username]
-  //   );
-
-  //   return result.rows.map((m) => ({
-  //     id: m.id,
-  //     from_user: {
-  //       username: m.from_username,
-  //     },
-  //     body: m.body,
-  //     sent_at: m.sent_at,
-  //     read_at: m.read_at,
-  //   }));
-  // }
-
-
-
-  /** Get messages from user to user AND messages to user1 from user2 */
-
   /** Update user data with `data`.
    *
-   * This is a "partial update" --- it's fine if data doesn't contain
-   * all the fields; this only changes provided ones.
-   *
    * Data can include:
-   *   {password, hobbies, interestss, image, location, radius }
+   *   { password, interests, hobbies, location, image, radius }
    *
-   * Returns { username, hobbies, interestss, image, location, radius }
+   * Returns { username, interests, hobbies, location, image, radius }
    *
    * Throws NotFoundError if not found.
    *
    */
 
-  //TODO:  needs work
   static async update(username, data) {
     if (data.password) {
       data.password = await bcrypt.hash(data.password, BCRYPT_WORK_FACTOR);
     }
+
+    const { setCols, values } = sqlForPartialUpdate(data);
+    const usernameVarIdx = "$" + (values.length + 1);
+
+    const querySql = `UPDATE users
+                        SET ${setCols}
+                        WHERE username = ${usernameVarIdx}
+                        RETURNING username,
+                                  interests,
+                                  hobbies,
+                                  image,
+                                  location,
+                                  radius`;
+    const result = await db.query(querySql, [...values, username]);
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No user: ${username}`);
+
+    delete user.password;
+    return user;
+  }
+
+  /** Update last_login_at for user */
+  static async updateLoginTimestamp(username) {
+    const result = await db.query(
+      `UPDATE users
+         SET last_login_at = current_timestamp
+           WHERE username = $1
+           RETURNING username`,
+      [username]
+    );
+    const user = result.rows[0];
+
+    if (!user) throw new NotFoundError(`No such user: ${username}`);
   }
 
   /** Delete given user from database; returns undefined.

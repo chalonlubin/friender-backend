@@ -8,7 +8,6 @@ const express = require("express");
 const { ensureCorrectUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 const User = require("../models/user");
-const { createToken } = require("../helpers/tokens");
 // const userNewSchema = require("../schemas/userNew.json");
 // const userUpdateSchema = require("../schemas/userUpdate.json");
 
@@ -60,29 +59,28 @@ router.get("/:username", ensureCorrectUser, async function (req, res, next) {
  * Data can include:
  *   { hobbies, interestss, location, radius, image }
  *
- * Returns { username, hobbies, interestss, location, radius, image}
+ * Returns { username, hobbies, interests, location, radius, image}
  *
  * Authorization required: same-user-as-:username
  **/
 
-// router.patch("users/:username", ensureCorrectUser, async function (req, res, next) {
-//   try {
-//     const validator = jsonschema.validate(
-//       req.body,
-//       userUpdateSchema,
-//       {required: true}
-//     );
-//     if (!validator.valid) {
-//       const errs = validator.errors.map(e => e.stack);
-//       throw new BadRequestError(errs);
-//     }
-
-//     const user = await User.update(req.params.username, req.body);
-//     return res.json({ user });
-//   } catch (err) {
-//     return next(err);
-//   }
-// });
+router.patch("/:username", ensureCorrectUser, async function (req, res, next) {
+  try {
+    // const validator = jsonschema.validate(
+    //   req.body,
+    //   userUpdateSchema,
+    //   {required: true}
+    // );
+    // if (!validator.valid) {
+    //   const errs = validator.errors.map(e => e.stack);
+    //   throw new BadRequestError(errs);
+    // }
+    const user = await User.update(req.params.username, req.body);
+    return res.json({ user });
+  } catch (err) {
+    return next(err);
+  }
+});
 
 /** DELETE users/[username]  =>  { deleted: username }
  *
