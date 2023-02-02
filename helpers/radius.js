@@ -3,6 +3,8 @@ const zipcodes = require("zipcodes");
 /** Calculates distance between two users,
  *  then compares the distance(miles) to the radius(miles.)
  *
+ *  Inputs where user1 = {username, location, radius}...
+ *
  *  Returns Boolean
  */
 function inRadius(user1, user2) {

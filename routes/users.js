@@ -82,6 +82,7 @@ router.patch(
 
     if (req.file) {
       const file = req.file;
+
       const result = await uploadFile(file);
       const filePath = result.Location;
       userUpdate = { ...req.body, image: filePath };

@@ -32,7 +32,7 @@
       },
       "radius": {
         "type": "integer",
-        "maximum": 500
+        "maximum": 600
       }
     },
     "additionalProperties": false,
