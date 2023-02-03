@@ -7,3 +7,5 @@
 4. multer uploads folder
 
 5. Organizing the architecture of state, useEffect with matches, potentials.
+
+6. Toasts being blocked by the Loader.

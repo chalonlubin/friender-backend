@@ -15,7 +15,6 @@ class Match {
    *
    */
   static async updateMatch(likerUsername, likeeUsername, matchStatus) {
-    console.log(likerUsername, likeeUsername, matchStatus)
     const result = await db.query(
       `INSERT INTO matches (liker, likee, matched)
               VALUES ($1, $2, $3)
