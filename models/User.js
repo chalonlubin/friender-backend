@@ -176,8 +176,8 @@ class User {
 
   /** Given a username, return data about user.
    *
-   * Returns { username, hobbies, interests, location, image,
-   *       radius, join_at, last_login_at }
+   * Returns [{ username, hobbies, interests, location, image,
+   *       radius, join_at, last_login_at }, ...]
    *
    * Throws NotFoundError if user not found.
    */
