@@ -10,7 +10,6 @@ const { ensureCorrectUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
 
 const multer = require("multer");
-// TODO: how to save photos without creating an uploads folder
 const storage = multer.memoryStorage();
 const upload = multer({storage});
 const { uploadFile } = require("../s3");

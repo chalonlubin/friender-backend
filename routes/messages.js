@@ -63,7 +63,7 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
  *
  *  Returns {id, readAt}
  */
-router.patch("/:id", async function (req, res, next) {
+router.patch("/:id", ensureCorrectUser, async function (req, res, next) {
   try {
     const { id } = req.params;
     const message = await Message.markRead(id);
