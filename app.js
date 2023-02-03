@@ -22,8 +22,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded());
 
-// TODO: use multer to parse multiform data - text and files
-// TODO: make multer stop uploads!
 
 // get auth token for all routes
 app.use(authenticateJWT);
