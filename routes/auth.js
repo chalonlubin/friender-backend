@@ -12,7 +12,7 @@ const { uploadFile } = require("../s3");
 const { createToken } = require("../helpers/tokens");
 const { BadRequestError } = require("../expressError");
 
-const User = require("../models/user");
+const User = require("../models/User");
 const jsonschema = require("jsonschema");
 const userNew = require("../schemas/userNew.json");
 const userAuth = require("../schemas/userAuth.json");

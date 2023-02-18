@@ -4,7 +4,7 @@ const express = require("express");
 const jsonschema = require("jsonschema");
 
 const Message = require("../models/message");
-const User = require("../models/user");
+const User = require("../models/User");
 
 const { ensureCorrectUser } = require("../middleware/auth");
 const { NotFoundError, BadRequestError } = require("../expressError");
