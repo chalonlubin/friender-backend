@@ -65,6 +65,7 @@ router.post(
   "/register",
   upload.single("image"),
   async function (req, res, next) {
+    console.log("helloo")
     req.body.location = +req.body.location;
     req.body.radius = +req.body.radius;
 
