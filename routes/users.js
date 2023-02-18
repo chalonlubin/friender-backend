@@ -3,7 +3,7 @@
 /** Routes for users. */
 
 const express = require("express");
-const User = require("../models/user");
+const User = require("../models/User");
 const jsonschema = require("jsonschema");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const { ensureCorrectUser } = require("../middleware/auth");
