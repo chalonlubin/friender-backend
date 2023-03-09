@@ -31,7 +31,6 @@ router.post("/token", async function (req, res, next) {
     throw new BadRequestError();
   }
   const { username, password } = req.body;
-
   const validator = jsonschema.validate({ username, password }, userAuth, {
     required: true,
   });

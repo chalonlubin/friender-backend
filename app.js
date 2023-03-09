@@ -16,7 +16,13 @@ const matchesRoutes = require("./routes/matches");
 const app = express();
 
 // allow connections to all routes from any browser
-app.use(cors());
+// app.use(cors());
+
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
 // allow both form-encoded and json body parsing
 app.use(express.json());

@@ -9,3 +9,5 @@
 5. Organizing the architecture of state, useEffect with matches, potentials.
 
 6. Toasts being blocked by the Loader.
+
+7. Upon deployment, CORS issue even tho CORS is enabled in app?
