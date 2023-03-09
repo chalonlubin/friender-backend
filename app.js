@@ -16,9 +16,7 @@ const matchesRoutes = require("./routes/matches");
 const app = express();
 
 // allow connections to all routes from any browser
-app.use(cors({
-  origin: 'https://friender-adventure.surge.sh'
-}));
+app.use(cors());
 
 // allow both form-encoded and json body parsing
 app.use(express.json());
