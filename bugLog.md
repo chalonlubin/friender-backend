@@ -10,4 +10,4 @@
 
 6. Toasts being blocked by the Loader.
 
-7. Upon deployment, CORS issue even tho CORS is enabled in app? Okay not CORS issue, the console is gaslighting me. Only the auth routes were not working (requests left hanging) and this was because the async router functions, which potentially throw errors, did not incorporate try/catch blocks to handle throws. Read up on unhandled rejections.
+7. Upon deployment, CORS issue even tho CORS is enabled in app? Okay not CORS issue, the console is gaslighting me. Only the auth routes were not working (requests left hanging) and this was because the async router functions, which potentially throw errors, did not incorporate try/catch blocks to handle throws. Read up on unhandled rejections. Also, we were using the `new` keyword to instantiate express.Router() accidentally.
