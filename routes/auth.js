@@ -27,26 +27,33 @@ const router = new express.Router();
  */
 
 router.post("/token", async function (req, res, next) {
-  if (req.body === undefined) {
-    throw new BadRequestError();
-  }
-  const { username, password } = req.body;
-  const validator = jsonschema.validate({ username, password }, userAuth, {
-    required: true,
-  });
-  if (!validator.valid) {
-    const errs = validator.errors.map((e) => e.stack);
-    throw new BadRequestError(errs);
-  }
+  try {
+    if (req.body === undefined) {
+      throw new BadRequestError();
+    }
 
-  const user = await User.authenticate(username, password);
-  if (user) {
-    const token = createToken(user);
-    User.updateLoginTimestamp(username);
-    return res.json({ token });
+    const { username, password } = req.body;
 
-  } else {
-    throw new UnauthorizedError("Invalid username/password");
+    const validator = jsonschema.validate({ username, password }, userAuth, {
+      required: true,
+    });
+
+    if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }
+
+    const user = await User.authenticate(username, password);
+
+    if (user) {
+      const token = createToken(user);
+      User.updateLoginTimestamp(username);
+      return res.json({ token });
+    } else {
+      throw new UnauthorizedError("Invalid username/password");
+    }
+  } catch (err) {
+    return next(err);
   }
 });
 
@@ -64,29 +71,33 @@ router.post(
   "/register",
   upload.single("image"),
   async function (req, res, next) {
-    console.log("helloo")
-    req.body.location = +req.body.location;
-    req.body.radius = +req.body.radius;
+    try {
+      req.body.location = +req.body.location;
+      req.body.radius = +req.body.radius;
 
-    if (!req.file) throw new BadRequestError("Image required.")
+      if (!req.file) throw new BadRequestError("Image required.")
 
-    const file = req.file;
-    const result = await uploadFile(file);
-    const filePath = result.Location;
-    const user = { ...req.body, image: filePath };
+      const file = req.file;
+      const result = await uploadFile(file);
+      const filePath = result.Location;
+      const user = { ...req.body, image: filePath };
 
-    const validator = jsonschema.validate(user, userNew, {
-      required: true,
-    });
-    if (!validator.valid) {
-      const errs = validator.errors.map((e) => e.stack);
-      throw new BadRequestError(errs);
+      const validator = jsonschema.validate(user, userNew, {
+        required: true,
+      });
+
+      if (!validator.valid) {
+        const errs = validator.errors.map((e) => e.stack);
+        throw new BadRequestError(errs);
+      }
+
+      const newUser = await User.register({ ...user });
+      const token = createToken(newUser);
+
+      return res.status(201).json({ token });
+    } catch (err){
+      next(err)
     }
-
-    const newUser = await User.register({ ...user });
-    const token = createToken(newUser);
-
-    return res.status(201).json({ token });
   }
 );
 
