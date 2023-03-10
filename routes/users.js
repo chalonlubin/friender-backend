@@ -11,7 +11,7 @@ const { BadRequestError } = require("../expressError");
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
-const upload = multer({storage});
+const upload = multer({ storage });
 const { uploadFile } = require("../s3");
 
 const router = express.Router();
@@ -76,17 +76,17 @@ router.patch(
   ensureCorrectUser,
   upload.single("image"),
   async function (req, res, next) {
-    if (req.body?.location) req.body.location = +req.body.location;
-    if (req.body?.radius) req.body.radius = +req.body.radius;
-    let userUpdate = req.body;
-
-    if (req.file) {
-      const file = req.file;
-      const result = await uploadFile(file);
-      const filePath = result.Location;
-      userUpdate = { ...req.body, image: filePath };
-    }
     try {
+      if (req.body?.location) req.body.location = +req.body.location;
+      if (req.body?.radius) req.body.radius = +req.body.radius;
+      let userUpdate = req.body;
+
+      if (req.file) {
+        const file = req.file;
+        const result = await uploadFile(file);
+        const filePath = result.Location;
+        userUpdate = { ...req.body, image: filePath };
+      }
       const validator = jsonschema.validate(userUpdate, userUpdateSchema, {
         required: true,
       });

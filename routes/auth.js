@@ -17,7 +17,7 @@ const jsonschema = require("jsonschema");
 const userNew = require("../schemas/userNew.json");
 const userAuth = require("../schemas/userAuth.json");
 
-const router = new express.Router();
+const router = express.Router();
 
 /** POST /auth/token:  { username, password } => { token }
  *

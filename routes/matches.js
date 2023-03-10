@@ -17,12 +17,16 @@ const router = express.Router();
  * Authorization required: same user-as-:username
  */
 router.post("/:username", ensureCorrectUser, async function (req, res, next) {
-  const liker = req.params.username;
-  const { likee, match } = req.body;
+  try {
+    const liker = req.params.username;
+    const { likee, match } = req.body;
 
-  const matchStatus = await Match.updateMatch(liker, likee, match);
+    const matchStatus = await Match.updateMatch(liker, likee, match);
 
-  return res.json({ matchStatus });
+    return res.json({ matchStatus });
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;

@@ -25,13 +25,13 @@ const router = express.Router();
  *  Returns {id, fromUsername, toUsername, body, sentAt, readAt}
  **/
 router.post("/:username", ensureCorrectUser, async function (req, res, next) {
-  const fromUsername = req.params.username;
-  const { toUsername, body } = req.body;
-
-  // make sure users are a match.
-  const matches = await User.getMatches(fromUsername);
-  const matchStatus = matches.some((match) => match.username === toUsername);
   try {
+    const fromUsername = req.params.username;
+    const { toUsername, body } = req.body;
+
+    // make sure users are a match.
+    const matches = await User.getMatches(fromUsername);
+    const matchStatus = matches.some((match) => match.username === toUsername);
     if (matchStatus === false)
       throw new NotFoundError("You can only message matches.");
 
