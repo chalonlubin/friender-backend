@@ -12,7 +12,6 @@ const {
 } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sqlHelper");
 const { inRadius } = require("../helpers/radius");
-const { UNSAFE_NavigationContext } = require("react-router-dom");
 
 /** User of the site. */
 
