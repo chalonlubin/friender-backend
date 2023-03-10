@@ -12,6 +12,7 @@ const {
 } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sqlHelper");
 const { inRadius } = require("../helpers/radius");
+const { UNSAFE_NavigationContext } = require("react-router-dom");
 
 /** User of the site. */
 
@@ -94,7 +95,6 @@ class User {
     );
 
     const user = results.rows[0];
-
     if (user) {
       const isValid = await bcrypt.compare(password, user.password);
       if (isValid === true) {
@@ -105,6 +105,7 @@ class User {
     }
 
     throw new UnauthorizedError("Invalid username/password");
+
   }
 
   /** Get all users that are within radius preference of curUser's location

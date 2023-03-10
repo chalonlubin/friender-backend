@@ -31,22 +31,20 @@ router.post("/:username", ensureCorrectUser, async function (req, res, next) {
   // make sure users are a match.
   const matches = await User.getMatches(fromUsername);
   const matchStatus = matches.some((match) => match.username === toUsername);
-  if (matchStatus === false)
-    throw new NotFoundError("You can only message matches.");
-
-  const validator = jsonschema.validate(
-    { toUsername, body },
-    messageNewSchema,
-    {
-      required: true,
-    }
-  );
-  if (!validator.valid) {
-    const errs = validator.errors.map((e) => e.stack);
-    throw new BadRequestError(errs);
-  }
-
   try {
+    if (matchStatus === false)
+      throw new NotFoundError("You can only message matches.");
+
+    const validator = jsonschema.validate(
+      { toUsername, body },
+      messageNewSchema,
+      { required: true }
+    );
+    if (!validator.valid) {
+      const errs = validator.errors.map((e) => e.stack);
+      throw new BadRequestError(errs);
+    }
+
     const newMessage = await Message.create(fromUsername, toUsername, body);
     return res.json({ newMessage });
   } catch (err) {
