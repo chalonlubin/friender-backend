@@ -16,7 +16,6 @@ const matchesRoutes = require("./routes/matches");
 const app = express();
 
 // allow connections to all routes from any browser
-app.options('*', cors())
 app.use(cors());
 
 // app.use(function(req, res, next) {

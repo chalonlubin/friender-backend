@@ -77,6 +77,7 @@ router.post(
 
       if (!req.file) throw new BadRequestError("Image required.")
 
+      console.log("result", req.file)
       const file = req.file;
       const result = await uploadFile(file);
       const filePath = result.Location;
