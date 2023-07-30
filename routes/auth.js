@@ -68,7 +68,7 @@ router.post("/token", async function (req, res, next) {
  * Authorization required: none
  */
 
-// TODO: on the front end, make sure form has correct attrib for multer
+
 router.post(
   "/register",
   upload.single("image"),
@@ -79,7 +79,7 @@ router.post(
 
       if (!req.file) throw new BadRequestError("Image required.");
 
-      console.log("req.file", req.file);
+
       const file = req.file;
       await uploadFile(file);
       const fileName = req.file.originalname;

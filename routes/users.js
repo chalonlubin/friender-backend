@@ -8,11 +8,15 @@ const jsonschema = require("jsonschema");
 const userUpdateSchema = require("../schemas/userUpdate.json");
 const { ensureCorrectUser } = require("../middleware/auth");
 const { BadRequestError } = require("../expressError");
+require('dotenv').config();
 
 const multer = require("multer");
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 const { uploadFile } = require("../s3");
+
+const bucketName = process.env.AWS_BUCKET_NAME;
+const region = process.env.AWS_BUCKET_REGION;
 
 const router = express.Router();
 
@@ -83,8 +87,9 @@ router.patch(
 
       if (req.file) {
         const file = req.file;
-        const result = await uploadFile(file);
-        const filePath = result.Location;
+        await uploadFile(file);
+        const fileName = req.file.originalname;
+        const filePath = `https://s3.${region}.amazonaws.com/${bucketName}/${fileName}`;
         userUpdate = { ...req.body, image: filePath };
       }
       const validator = jsonschema.validate(userUpdate, userUpdateSchema, {
